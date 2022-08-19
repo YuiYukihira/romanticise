@@ -1,0 +1,9 @@
+# rust
+/target
+
+# nix
+*.tar.gz
+
+
+# Log files
+**/*.log
