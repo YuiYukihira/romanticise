@@ -14,12 +14,12 @@ let
     };
 in
     pkgs.dockerTools.buildImage {
-        name = "romantacise";
+        name = "romanticise";
         
         fromImage = nixos;
         fromImageName = "nix";
         fromImageTag = "2.10.3";
         config = {
-            Cmd = [ "${cargo_nix.rootCrate.build}/bin/romantacise"];
+            Cmd = [ "${cargo_nix.rootCrate.build}/bin/romanticise"];
         };
     }

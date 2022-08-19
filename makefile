@@ -1,14 +1,14 @@
 .PHONY: build docker test doc clean run
 
 
-romantacise.tar.gz:
+romanticise.tar.gz:
 	nix-build -o $@
 
-docker: romantacise.tar.gz
+docker: romanticise.tar.gz
 
 load: docker
-	docker load < romantacise.tar.gz
+	docker load < romanticise.tar.gz
 
 build test docs clean:
 	cargo $@
-	rm romantacise.tar.gz
+	rm romanticise.tar.gz

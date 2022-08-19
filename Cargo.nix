@@ -35,7 +35,7 @@ rec {
   #
 
   rootCrate = rec {
-    packageId = "romantacise";
+    packageId = "romanticise";
 
     # Use this attribute to refer to the derivation building your root crate package.
     # You can override the features with rootCrate.build.override { features = [ "default" "feature1" ... ]; }.
@@ -51,10 +51,10 @@ rec {
   # You can override the features with
   # workspaceMembers."${crateName}".build.override { features = [ "default" "feature1" ... ]; }.
   workspaceMembers = {
-    "romantacise" = rec {
-      packageId = "romantacise";
+    "romanticise" = rec {
+      packageId = "romanticise";
       build = internal.buildRustCrateWithFeatures {
-        packageId = "romantacise";
+        packageId = "romanticise";
       };
 
       # Debug support which might change between releases.
@@ -87,12 +87,12 @@ rec {
     #   inject test dependencies into the build
 
     crates = {
-      "romantacise" = rec {
-        crateName = "romantacise";
+      "romanticise" = rec {
+        crateName = "romanticise";
         version = "0.1.0";
         edition = "2021";
         crateBin = [
-          { name = "romantacise"; path = "src/main.rs"; }
+          { name = "romanticise"; path = "src/main.rs"; }
         ];
         src = lib.cleanSourceWith { filter = sourceFilter;  src = ./.; };
 
