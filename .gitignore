@@ -3,6 +3,7 @@
 
 # nix
 *.tar.gz
+Cargo.nix
 
 
 # Log files

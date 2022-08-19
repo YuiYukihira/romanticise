@@ -1,7 +1,10 @@
 .PHONY: build docker test doc clean run
 
 
-romanticise.tar.gz:
+Cargo.nix:
+	crate2nix generate
+
+romanticise.tar.gz: Cargo.nix
 	nix-build -o $@
 
 docker: romanticise.tar.gz
@@ -9,6 +12,9 @@ docker: romanticise.tar.gz
 load: docker
 	docker load < romanticise.tar.gz
 
-build test docs clean:
+build test docs:
 	cargo $@
-	rm romanticise.tar.gz
+
+clean:
+	cargo clean
+	rm romanticise.tar.gz Cargo.nix
