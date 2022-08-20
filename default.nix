@@ -18,7 +18,7 @@ let
     };
 in
     pkgs.dockerTools.buildImage {
-        name = "romanticise";
+        name = "ghcr.io/yuiyukihira/romanticise";
         tag = imageTag;
         
         fromImage = nixos;

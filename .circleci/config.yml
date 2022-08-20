@@ -20,7 +20,7 @@ workflows:
                 - main
           github_token: GITHUB_TOKEN_LULUBOT
       - build:
-          context: [yuiyukihira]
+          context: [yuiyukihira, cachix]
           requires:
             - check
             - test
@@ -54,7 +54,7 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-          context: [yuiyukihira]
+          context: [yuiyukihira, cachix]
           requires:
             - check
             - test
@@ -65,13 +65,16 @@ workflows:
 jobs:
   build:
     docker:
-      - image: nixos/nix:2.3.12
+      - image: nixos/nix:2.10.3
         environment:
           CACHIX_NAME: yuiyukihira
           VERSION: << parameters.version >>
     steps:
       - checkout
       - setup_remote_docker
+      - run:
+          name: Install docker
+          command: nix-env -iA nixpkgs.docker
       - run:
           name: Set up Cachix
           command: |
@@ -80,8 +83,9 @@ jobs:
       - run:
           name: Build Image
           command: |
-            nix-shell
-            make target/romanticise-<< parameters.version >>.tar.gz
+            nix-shell --pure --command "make target"
+            nix-shell --pure --command "make -t sqlx-data.json"
+            nix-shell --command "VERSION=<< parameters.version >> make target/romanticise-<< parameters.version >>.tar.gz"
       - rust/docker-load:
           file: target/romanticise-<< parameters.version >>.tar.gz
       - rust/docker-publish:
@@ -113,4 +117,4 @@ jobs:
       - run: cargo test --locked
 
 orbs:
-  rust: yuiyukihira/rust@1.1.0
+  rust: yuiyukihira/rust@1.1.1

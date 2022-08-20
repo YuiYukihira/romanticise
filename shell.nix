@@ -10,5 +10,7 @@ pkgs.mkShell {
         pkgs.cachix
         pkgs.sqlx-cli
         pkgs.yq
+	    pkgs.docker
+	    pkgs.nix
     ];
 }
