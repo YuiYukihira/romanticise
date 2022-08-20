@@ -6,74 +6,49 @@ workflows:
     jobs:
       - check
       - test
-      - build:
-          version: latest
-      - makepress-orb/release-please-single:
+      - rust/release-please-single:
           context: [lulubot]
           filters:
             branches:
               only:
                 - main
-      - makepress-orb/publish-docker:
-          pre-steps:
-            - attach_workspace:
-                at: /tmp/workspace
-            - run: |
-                docker load < /tmp/workspace/romanticise-latest.tar.gz
-          context: [lulubot]
+      - build:
+          context: [yuiyukihira]
           requires:
             - check
             - test
-            - makepress-orb/release-please-single
-            - build
+            - rust/release-please-single
           filters:
             branches:
               only:
                 - main
-          username: LULUBOT_USERNAME
-          password: GITHUB_TOKEN_LULUBOT
-          image: romanticise
-          registry: ghcr.io
-          tag: latest
+          username: GITHUB_USERNAME
+          password: GITHUB_PAT
+          version: latest
   release:
     jobs:
       - check
       - test
+      - rust/release-please-single:
+          context: [lulubot]
+          filters:
+            branches:
+              only:
+                - main
       - build:
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
-          version: "${CIRCLE_TAG/v/''}"
-      - makepress-orb/release-please-single:
-          context: [lulubot]
-          filters:
-            branches:
-              only:
-                - main
-      - makepress-orb/publish-docker:
-          pre-steps:
-            - attach_workspace:
-                at: /tmp/workspace
-            - run: |
-                docker load < "/tmp/workspace/romanticise-${CIRCLE_TAG/v/''}.tar.gz"
-          context: [lulubot]
+          context: [yuiyukihira]
           requires:
             - check
             - test
-            - makepress-orb/release-please-single
-            - build
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          username: LULUBOT_USERNAME
-          password: GITHUB_TOKEN_LULUBOT
-          image: romanticise
-          registry: ghcr.io
-          tag: "${CIRCLE_TAG/v/''}"
+            - rust/release-please-single
+          username: GITHUB_USERNAME
+          password: GITHUB_PAT
+          version: "${CIRCLE_TAG/v/''}"
 jobs:
   build:
     docker:
@@ -88,30 +63,38 @@ jobs:
           command: |
             nix-env -iA nixpkgs.cachix nixpkgs.bash
             cachix use $CACHIX_NAME
-      - run: make target/romanticise-<< parameters.version >>.tar.gz
-      - persist_to_workspace:
-          root: target
-          paths:
-            - romanticise-<< parameters.version >>.tar.gz
+      - run:
+          name: Build Image
+          command: make target/romanticise-<< parameters.version >>.tar.gz
+      - rust/docker-load:
+          file: target/romanticise-<< parameters.version >>.tar.gz
+      - rust/docker-publish:
+          tag: << parameters.version >>
+          image: yuiyukihira/romanticise
+          registry: ghcr.io
+          username: << parameters.username >>
+          password: << parameters.password >>
     parameters:
       version:
         description: "Version to build"
         default: "latest"
         type: string
+      username:
+        description: "Docker registry username"
+        type: string
+      password:
+        description: "Docker registry password"
+        type: string
   check:
-    executor: makepress-orb/rust
+    executor: rust/rust
     steps:
       - checkout
-      - makepress-orb/with-rust:
-          steps:
-            - run: cargo clippy --locked
+      - run: cargo clippy --locked
   test:
-    executor: makepress-orb/rust
+    executor: rust/rust
     steps:
       - checkout
-      - makepress-orb/with-rust:
-          steps:
-            - run: cargo test --locked
+      - run: cargo test --locked
 
 orbs:
-  makepress-orb: makepress/makepress-orb@2.4.1
+  rust: yuiyukihira/rust@1.0.1
