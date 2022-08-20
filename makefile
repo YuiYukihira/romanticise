@@ -1,4 +1,4 @@
-.PHONY: build docker test doc clean run
+.PHONY: build docker test doc clean run setup
 
 
 Cargo.nix:
@@ -18,3 +18,19 @@ build test docs:
 clean:
 	cargo clean
 	rm romanticise.tar.gz Cargo.nix
+
+wipe: killdb clean
+
+db:
+	docker run -d --rm -p 5432:5432 -e POSTGRES_PASSWORD=notalivepassword postgres > db
+	
+killdb:
+	docker stop "$(shell cat db)"
+	rm db
+
+setup: db
+	sqlx database create
+	./scripts/migrations/run
+
+migrate: db
+	sqlx mig run
