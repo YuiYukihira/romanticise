@@ -4,33 +4,38 @@
 Cargo.nix:
 	crate2nix generate
 
-romanticise.tar.gz: Cargo.nix
+build/romanticise.tar.gz: Cargo.nix sqlx-data.json
+	cargo sqlx prepare --check
 	nix-build -o $@
 
-docker: romanticise.tar.gz
+load: build/romanticise.tar.gz
+	docker load < build/romanticise.tar.gz
 
-load: docker
-	docker load < romanticise.tar.gz
-
-build test docs:
+build test docs: sqlx-data.json
+	cargo sqlx prepare --check
 	cargo $@
 
 clean:
 	cargo clean
-	rm romanticise.tar.gz Cargo.nix
+	rm build/romanticise.tar.gz Cargo.nix sqlx-data.json
 
 wipe: killdb clean
 
-db:
-	docker run -d --rm -p 5432:5432 -e POSTGRES_PASSWORD=notalivepassword postgres > db
+build/db:
+	@mkdir -p build
+	docker run -d --rm -p 5432:5432 -e POSTGRES_PASSWORD=notalivepassword postgres > build/db
 	
 killdb:
-	docker stop "$(shell cat db)"
-	rm db
+	docker stop "$(shell cat build/db)"
+	rm -r build
 
-setup: db
+setup: build/db
 	sqlx database create
-	./scripts/migrations/run
 
-migrate: db
+build/migrated: build/db
+	@mkdir -p build
 	sqlx mig run
+	touch build/migrated
+
+sqlx-data.json: build/migrated
+	cargo sqlx prepare

@@ -5,6 +5,8 @@
 *.tar.gz
 Cargo.nix
 
+# Make
+build/
 
 # Log files
 **/*.log

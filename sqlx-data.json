@@ -1,0 +1,25 @@
+{
+  "db": "PostgreSQL",
+  "fd47541810b0fa537409dde70ae0b927a8ec45cf2ef2d0b6b203f2ace8eb54a1": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4",
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\nINSERT INTO Image (id, image_hash, image_path)\nVALUES ($1, $2, $3)\nRETURNING id;\n            "
+  }
+}

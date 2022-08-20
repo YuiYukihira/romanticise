@@ -1,6 +1,0 @@
-#!/bin/sh -e
-#
-# usage
-# ./scripts/migrations/run
-#
-sqlx migrate run
