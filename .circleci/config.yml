@@ -71,6 +71,7 @@ jobs:
           VERSION: << parameters.version >>
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Set up Cachix
           command: |
@@ -78,7 +79,9 @@ jobs:
             cachix use $CACHIX_NAME
       - run:
           name: Build Image
-          command: nix-shell --command "make target/romanticise-<< parameters.version >>.tar.gz"
+          command: |
+            nix-shell
+            make target/romanticise-<< parameters.version >>.tar.gz
       - rust/docker-load:
           file: target/romanticise-<< parameters.version >>.tar.gz
       - rust/docker-publish:
