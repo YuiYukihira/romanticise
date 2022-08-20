@@ -1,20 +1,21 @@
 .PHONY: build docker test doc clean run setup
 
-VERSION ?= 0.1.0
+VERSION ?= $(shell tomlq -r .package.version Cargo.toml)
 BUILD_DIR := ./target
+CACHIX_NAME ?= yuiyukihira
 
 Cargo.nix:
 	crate2nix generate
 
 $(BUILD_DIR)/romanticise-$(VERSION).tar.gz: Cargo.nix sqlx-data.json
-	nix-build -o $@ --arg imageTag '"$(VERSION)"'
+	cachix watch-exec yuiyukihira nix-build -- -o $@ --arg imageTag '"$(VERSION)"'
 
 load: $(BUILD_DIR)/romanticise-$(VERSION).tar.gz
 	docker load < $<
 
 build test docs: sqlx-data.json
 	cargo sqlx prepare --check
-	cargo $@
+	cargo $@ --locked
 
 clean:
 	cargo clean

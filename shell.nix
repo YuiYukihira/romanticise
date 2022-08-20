@@ -9,5 +9,6 @@ pkgs.mkShell {
         pkgs.openssl
         pkgs.cachix
         pkgs.sqlx-cli
+        pkgs.yq
     ];
 }

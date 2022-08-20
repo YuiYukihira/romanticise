@@ -1,0 +1,117 @@
+version: 2.1
+
+workflows:
+  version: 2
+  branch:
+    jobs:
+      - check
+      - test
+      - build:
+          version: latest
+      - makepress-orb/release-please-single:
+          context: [lulubot]
+          filters:
+            branches:
+              only:
+                - main
+      - makepress-orb/publish-docker:
+          pre-steps:
+            - attach_workspace:
+                at: /tmp/workspace
+            - run: |
+                docker load < /tmp/workspace/romanticise-latest.tar.gz
+          context: [lulubot]
+          requires:
+            - check
+            - test
+            - makepress-orb/release-please-single
+            - build
+          filters:
+            branches:
+              only:
+                - main
+          username: LULUBOT_USERNAME
+          password: GITHUB_TOKEN_LULUBOT
+          image: romanticise
+          registry: ghcr.io
+          tag: latest
+  release:
+    jobs:
+      - check
+      - test
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          version: "${CIRCLE_TAG/v/''}"
+      - makepress-orb/release-please-single:
+          context: [lulubot]
+          filters:
+            branches:
+              only:
+                - main
+      - makepress-orb/publish-docker:
+          pre-steps:
+            - attach_workspace:
+                at: /tmp/workspace
+            - run: |
+                docker load < "/tmp/workspace/romanticise-${CIRCLE_TAG/v/''}.tar.gz"
+          context: [lulubot]
+          requires:
+            - check
+            - test
+            - makepress-orb/release-please-single
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          username: LULUBOT_USERNAME
+          password: GITHUB_TOKEN_LULUBOT
+          image: romanticise
+          registry: ghcr.io
+          tag: "${CIRCLE_TAG/v/''}"
+jobs:
+  build:
+    docker:
+      - image: nixos/nix:2.3.12
+        environment:
+          CACHIX_NAME: yuiyukihira
+          VERSION: << parameters.version >>
+    steps:
+      - checkout
+      - run:
+          name: Set up Cachix
+          command: |
+            nix-env -iA nixpkgs.cachix nixpkgs.bash
+            cachix use $CACHIX_NAME
+      - run: make target/romanticise-<< parameters.version >>.tar.gz
+      - persist_to_workspace:
+          root: target
+          paths:
+            - romanticise-<< parameters.version >>.tar.gz
+    parameters:
+      version:
+        description: "Version to build"
+        default: "latest"
+        type: string
+  check:
+    executor: makepress-orb/rust
+    steps:
+      - checkout
+      - makepress-orb/with-rust:
+          steps:
+            - run: cargo clippy --locked
+  test:
+    executor: makepress-orb/rust
+    steps:
+      - checkout
+      - makepress-orb/with-rust:
+          steps:
+            - run: cargo test --locked
+
+orbs:
+  makepress-orb: makepress/makepress-orb@2.4.1
