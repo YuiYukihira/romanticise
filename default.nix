@@ -1,4 +1,8 @@
-{ pkgs ? import <nixpkgs> { }, pkgsLinux ? import <nixpkgs> { system = "x86_64-linux"; } }:
+{
+    pkgs ? import <nixpkgs> { },
+    pkgsLinux ? import <nixpkgs> { system = "x86_64-linux"; },
+    imageTag ? "latest"
+}:
 
 let 
     cargo_nix = import ./Cargo.nix {inherit pkgs; };
@@ -15,6 +19,7 @@ let
 in
     pkgs.dockerTools.buildImage {
         name = "romanticise";
+        tag = imageTag;
         
         fromImage = nixos;
         fromImageName = "nix";
