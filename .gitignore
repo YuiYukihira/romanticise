@@ -3,7 +3,6 @@
 
 # nix
 *.tar.gz
-Cargo.nix
 
 # Make
 build/
