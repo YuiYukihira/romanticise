@@ -18,6 +18,7 @@ workflows:
             branches:
               only:
                 - main
+          github_token: GITHUB_TOKEN_LULUBOT
       - build:
           context: [yuiyukihira]
           requires:
@@ -46,6 +47,7 @@ workflows:
           filters:
             branches:
               ignore: /.*/
+          github_token: GITHUB_TOKEN_LULUBOT
       - build:
           filters:
             tags:
@@ -76,7 +78,7 @@ jobs:
             cachix use $CACHIX_NAME
       - run:
           name: Build Image
-          command: make target/romanticise-<< parameters.version >>.tar.gz
+          command: nix-shell --command "make target/romanticise-<< parameters.version >>.tar.gz"
       - rust/docker-load:
           file: target/romanticise-<< parameters.version >>.tar.gz
       - rust/docker-publish:
@@ -108,4 +110,4 @@ jobs:
       - run: cargo test --locked
 
 orbs:
-  rust: yuiyukihira/rust@1.0.1
+  rust: yuiyukihira/rust@1.1.0
