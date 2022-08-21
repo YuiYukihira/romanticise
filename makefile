@@ -1,13 +1,16 @@
 .PHONY: build docker test doc clean run setup spoof
 
 VERSION ?= $(shell tomlq -r .package.version Cargo.toml)
-BUILD_DIR := ./target
+BUILD_DIR := ./build-artifacts
 CACHIX_NAME ?= yuiyukihira
 
 $(BUILD_DIR):
 	@mkdir -p $@
 
-Cargo.nix:
+Cargo.lock:
+	cargo update
+
+Cargo.nix: Cargo.lock
 	crate2nix generate
 
 $(BUILD_DIR)/romanticise-$(VERSION).tar.gz: Cargo.nix sqlx-data.json
@@ -22,17 +25,22 @@ build test docs: sqlx-data.json
 
 clean:
 	cargo clean
-	rm Cargo.nix sqlx-data.json
+	rm -rf Cargo.nix sqlx-data.json
 
 wipe: killdb clean
+	rm -rf $(BUILD_DIR)
 
-setup $(BUILD_DIR)/db: $(BUILD_DIR)
+setup: | $(BUILD_DIR)
+	docker run -d --rm -p 5432:5432 -e POSTGRES_PASSWORD=notalivepassword postgres > $(BUILD_DIR)/db
+	sqlx database create
+
+$(BUILD_DIR)/db: | $(BUILD_DIR)
 	docker run -d --rm -p 5432:5432 -e POSTGRES_PASSWORD=notalivepassword postgres > $(BUILD_DIR)/db
 	sqlx database create
 	
 killdb:
 	docker stop "$(shell cat $(BUILD_DIR)/db)"
-	rm -r build
+	rm $(BUILD_DIR)/db
 
 sqlx-data.json: $(BUILD_DIR)/db 
 	sqlx mig run

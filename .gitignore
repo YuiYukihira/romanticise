@@ -6,6 +6,7 @@
 
 # Make
 build/
+build-artifacts/
 
 # Log files
 **/*.log
