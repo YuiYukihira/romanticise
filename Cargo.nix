@@ -2923,6 +2923,10 @@ rec {
             packageId = "reqwest";
           }
           {
+            name = "seahash";
+            packageId = "seahash";
+          }
+          {
             name = "sqlx";
             packageId = "sqlx";
             features = [ "postgres" "runtime-tokio-native-tls" "offline" ];
@@ -3015,6 +3019,19 @@ rec {
           "default" = [ "use_std" ];
         };
       };
+      "seahash" = rec {
+        crateName = "seahash";
+        version = "4.1.0";
+        edition = "2015";
+        sha256 = "0sxsb64np6bvnppjz5hg4rqpnkczhsl8w8kf2a5lr1c08xppn40w";
+        authors = [
+          "ticki <ticki@users.noreply.github.com>"
+          "Tom Almeida <tom@tommoa.me>"
+        ];
+        features = {
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
       "security-framework" = rec {
         crateName = "security-framework";
         version = "2.7.0";
@@ -3092,9 +3109,9 @@ rec {
       };
       "serde" = rec {
         crateName = "serde";
-        version = "1.0.143";
+        version = "1.0.144";
         edition = "2015";
-        sha256 = "0ls54n526mbqw324h3y62whl54fdbad4vmn6ym7zf909nzaybs2k";
+        sha256 = "0q3qy4cv4jjmwa23nrgrppfxh2g8ahr7fs4iijw47k9xvq87fx0g";
         authors = [
           "Erick Tryzelaar <erick.tryzelaar@gmail.com>"
           "David Tolnay <dtolnay@gmail.com>"
@@ -3121,9 +3138,9 @@ rec {
       };
       "serde_derive" = rec {
         crateName = "serde_derive";
-        version = "1.0.143";
+        version = "1.0.144";
         edition = "2015";
-        sha256 = "14c3p1d87mswxfnz6ly7ah20sscvwpslgfc5dg167vksapgfin6k";
+        sha256 = "003sx1ihjcfwj2az357qj7i38b1ji3w8krw35y0h3ldidy0kmvcl";
         procMacro = true;
         authors = [
           "Erick Tryzelaar <erick.tryzelaar@gmail.com>"
@@ -3149,9 +3166,9 @@ rec {
       };
       "serde_json" = rec {
         crateName = "serde_json";
-        version = "1.0.83";
+        version = "1.0.85";
         edition = "2018";
-        sha256 = "19ymnc0rvm7pacy22dq99ngxhnpyxg7bv7gj3srpb7i7r3ih9p9q";
+        sha256 = "0i2akpn5js5jv0nm5vwrwk3xsm40pbdi82kda3h5r7ggmbijhnp5";
         authors = [
           "Erick Tryzelaar <erick.tryzelaar@gmail.com>"
           "David Tolnay <dtolnay@gmail.com>"

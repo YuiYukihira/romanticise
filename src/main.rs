@@ -3,6 +3,7 @@ use tokio;
 
 
 mod db;
+mod image;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

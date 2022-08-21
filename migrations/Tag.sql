@@ -1,5 +1,0 @@
-CREATE TABLE IF NOT EXISTS Tag
-(
-  id  INTEGER PRIMARY KEY,
-  description TEXT NOT NULL
-);

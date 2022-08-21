@@ -1,6 +1,64 @@
 {
   "db": "PostgreSQL",
-  "fd47541810b0fa537409dde70ae0b927a8ec45cf2ef2d0b6b203f2ace8eb54a1": {
+  "4f984c4275776657bb71263f13766eb53e97ed690380d5efe1e2c93fe84d32b1": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "description",
+          "ordinal": 1,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\nSELECT Tag.* FROM Tag\nINNER JOIN ImageTag\nON ImageTag.tag_id = Tag.id\nWHERE ImageTag.image_id = $1;\n            "
+  },
+  "c4feaa1f99930bbbe378a2df3aed14ab6b25883b7906574d5221e3b02e154d3e": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "image_hash",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "image_path",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "\nSELECT * FROM Image\nWHERE image_hash = $1;\n            "
+  },
+  "ee1225885f7a7381c384b51b12f25fc268e7c24dd4f1a32f37a4d685dd9fd7be": {
     "describe": {
       "columns": [
         {
@@ -14,12 +72,11 @@
       ],
       "parameters": {
         "Left": [
-          "Int4",
           "Text",
           "Text"
         ]
       }
     },
-    "query": "\nINSERT INTO Image (id, image_hash, image_path)\nVALUES ($1, $2, $3)\nRETURNING id;\n            "
+    "query": "\nINSERT INTO Image (image_hash, image_path)\nVALUES ($1, $2)\nRETURNING id;\n            "
   }
 }
