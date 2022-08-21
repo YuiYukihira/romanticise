@@ -83,11 +83,11 @@ jobs:
       - run:
           name: Build Image
           command: |
-            nix-shell --pure --command "make target"
+            nix-shell --pure --command "make build-artifacts"
             nix-shell --pure --command "make -t sqlx-data.json"
-            nix-shell --command "VERSION=<< parameters.version >> make target/romanticise-<< parameters.version >>.tar.gz"
+            nix-shell --command "VERSION=<< parameters.version >> make build-artifacts/romanticise-<< parameters.version >>.tar.gz"
       - rust/docker-load:
-          file: target/romanticise-<< parameters.version >>.tar.gz
+          file: build-artifacts/romanticise-<< parameters.version >>.tar.gz
       - rust/docker-publish:
           tag: << parameters.version >>
           image: yuiyukihira/romanticise
