@@ -1,8 +1,10 @@
+use serde::Serialize;
 use sqlx::{self, FromRow, query, query_as};
+use futures::stream::StreamExt;
 
-pub type Result<T> = sqlx::Result<T>;
+use crate::Result;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Image {
     pub id: i32,
     pub image_hash: String,
@@ -58,7 +60,7 @@ SELECT Tag.* FROM Tag
 INNER JOIN ImageTag
 ON ImageTag.tag_id = Tag.id
 WHERE ImageTag.image_id = $1;
-            "#, self.id).fetch(conn);
+            "#, self.id).fetch(conn).map(|r| r.map_err(|e| e.into()));
 
         Ok(recs)
     }
