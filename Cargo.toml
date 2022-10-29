@@ -15,4 +15,4 @@ serde = { version = "1.0.144", features = ["derive"] }
 sqlx = { version = "0.6.1", features = ["postgres", "runtime-tokio-native-tls", "offline"] }
 thiserror = "1.0.32"
 tokio = { version = "1.20.1", features = ["full"] }
-warp = "0.3.2"
+warp = "0.3.3"
