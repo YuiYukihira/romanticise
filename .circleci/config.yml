@@ -65,7 +65,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: nixos/nix:2.10.3
+      - image: nixos/nix:2.21.1
         environment:
           CACHIX_NAME: yuiyukihira
           VERSION: << parameters.version >>
